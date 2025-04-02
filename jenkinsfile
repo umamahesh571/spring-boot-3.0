@@ -8,7 +8,8 @@ pipeline {
         BRANCH = 'main'
         IMAGE_NAME = 'spring-boot-3.0'
         CONTAINER_NAME = 'spring-boot-3.0-container'
-        PORT = '8080'
+        PORT = '8080'  // Expose only 8080 port inside the container
+        DOCKERFILE_PATH = 'Dockerfile'  // Define the Dockerfile location (adjust if needed)
     }
     
     stages {
@@ -37,10 +38,10 @@ pipeline {
                 script {
                     sh '''
                         cp target/*.jar app.jar
-                        docker build -t ${IMAGE_NAME} .
+                        docker build -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME} .
                         docker stop ${CONTAINER_NAME} || true
                         docker rm ${CONTAINER_NAME} || true
-                        docker run -d --name ${CONTAINER_NAME} -p ${PORT}:8080 ${IMAGE_NAME}
+                        docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} ${IMAGE_NAME}
                     '''
                 }
             }
